@@ -1,1 +1,39 @@
-.pio
+# --- PlatformIO ---
+.pio/
+.pioenvs/
+.piolibdeps/
+libdeps/
+
+# --- CMake & Termux ---
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+run_tests
+
+# --- ESP-IDF Specific ---
+sdkconfig
+sdkconfig.old
+managed_components/
+
+# --- VSCode & IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Node.js / Backend ---
+node_modules/
+npm-debug.log
+.env
+.DS_Store
+
+# --- Python ---
+__pycache__/
+*.pyc
+
+# --- Binary Artifacts ---
+*.bin
+*.elf
+*.map
