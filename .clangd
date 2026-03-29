@@ -1,0 +1,13 @@
+CompileFlags:
+  # 1. Loại bỏ các flag mà clangd không hiểu (mấy cái báo lỗi 1-4 của bạn)
+  Remove: [-mlongcalls, -fno-tree-switch-conversion, -fstrict-volatile-bitfields, -fno-shrink-wrap, -mlong-calls]
+  
+
+  CompilationDatabase: "build"
+
+Index:
+  Background: Build
+
+# 2. Ép clangd hỏi bộ compiler của ESP-IDF để lấy đúng đường dẫn 'sys/features.h'
+# THAY ĐƯỜNG DẪN DƯỚI ĐÂY BẰNG ĐƯỜNG DẪN THỰC TẾ TRÊN MÁY BẠN
+query-driver: ["--query-driver=C:\\Espressif\\tools\\xtensa-esp-elf\\esp-15.2.0_20251204\\xtensa-esp-elf\\bin\\xtensa-esp32-elf-gcc.exe"]
