@@ -4,61 +4,28 @@
   "editor": "wokwi",
   "parts": [
     { "type": "board-esp32-s3-devkitc-1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
-    { "type": "wokwi-dht22", "id": "dht1", "top": -47.7, "left": -178.2, "attrs": {} },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": -47.7,
+      "left": -178.2,
+      "attrs": { "temperature": "-17.2" }
+    },
     {
       "type": "wokwi-pir-motion-sensor",
       "id": "pir1",
-      "top": -130.4,
-      "left": -55.38,
+      "top": -111.2,
+      "left": 155.82,
       "attrs": {}
     },
     {
       "type": "wokwi-buzzer",
       "id": "bz1",
-      "top": 280.8,
-      "left": -151.8,
-      "attrs": { "volume": "0.1" }
+      "top": 204,
+      "left": 241.8,
+      "attrs": { "volume": "1.0" }
     },
-    { "type": "wokwi-neopixel", "id": "rgb_strip", "top": 6.1, "left": 229.4, "attrs": {} }
-  ],
-  "connections": [
-    [ "esp:TX", "$serialMonitor:RX", "", [] ],
-    [ "esp:RX", "$serialMonitor:TX", "", [] ],
-    [ "esp:GND.1", "dht1:GND", "black", [ "v0" ] ],
-    [ "esp:3V3.1", "dht1:VCC", "red", [ "v0" ] ],
-    [ "esp:1", "dht1:SDA", "green", [ "v0" ] ],
-    [ "esp:GND.2", "pir1:GND", "black", [ "v0" ] ],
-    [ "esp:3V3.2", "pir1:VCC", "red", [ "v0" ] ],
-    [ "esp:2", "pir1:OUT", "purple", [ "v0" ] ],
-    [ "esp:GND.3", "bz1:1", "black", [ "v0" ] ],
-    [ "esp:3", "bz1:2", "blue", [ "v0" ] ],
-    [ "esp:GND.4", "rgb_strip:GND", "black", [ "v0" ] ],
-    [ "esp:5V", "rgb_strip:VCC", "red", [ "v0" ] ],
-    [ "esp:48", "rgb_strip:DIN", "orange", [ "v0" ] ]
-  ],
-  "dependencies": {}
-}{
-  "version": 1,
-  "author": "Minh Đức",
-  "editor": "wokwi",
-  "parts": [
-    { "type": "board-esp32-s3-devkitc-1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
-    { "type": "wokwi-dht22", "id": "dht1", "top": -47.7, "left": -178.2, "attrs": {} },
-    {
-      "type": "wokwi-pir-motion-sensor",
-      "id": "pir1",
-      "top": -130.4,
-      "left": -55.38,
-      "attrs": {}
-    },
-    {
-      "type": "wokwi-buzzer",
-      "id": "bz1",
-      "top": 280.8,
-      "left": -151.8,
-      "attrs": { "volume": "0.1" }
-    },
-    { "type": "wokwi-neopixel", "id": "rgb_strip", "top": 6.1, "left": 229.4, "attrs": {} }
+    { "type": "wokwi-neopixel", "id": "rgb_strip", "top": 140.5, "left": 277.4, "attrs": {} }
   ],
   "connections": [
     [ "esp:TX", "$serialMonitor:RX", "", [] ],
