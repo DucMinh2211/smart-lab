@@ -8,46 +8,44 @@ Dự án phát triển hệ thống giám sát phòng Lab thông minh sử dụn
 *Mục tiêu: Thiết kế kiến trúc và chuẩn bị môi trường phát triển.*
 
 - [x] **Technical Documentation:** Hoàn thiện tài liệu `@doc.md` chi tiết về kiến trúc.
-- [x] **Project Structure:** Thiết lập cấu trúc thư mục Hybrid (src, include, test, docs).
-- [x] **Toolchain Setup:** Cấu hình PlatformIO (Native & ESP32) và CMake cho Termux/Linux.
-- [x] **Hardware Mapping:** Xác định sơ đồ chân (Pinout) cho OhStem Yolo Kit.
+- [x] **Project Structure:** Thiết lập cấu trúc thư mục Hybrid chuẩn ESP-IDF (main, components).
+- [x] **Toolchain Setup:** Cấu hình thành công ESP-IDF v6.0 cho chip ESP32-S3 (Yolo:Bit).
+- [x] **LSP Configuration:** Thiết lập `.clangd` và `.vscode` để nhận diện FreeRTOS/ESP-IDF headers.
+- [x] **Hardware Mapping:** Xác định sơ đồ chân (Pinout) cho OhStem Yolo Kit / Yolo:Bit.
 
 ---
 
-## 🚀 Phase 2: Core Logic & Firmware (Short-term: Week 1-2)
+## 🚀 Phase 2: Core Logic & Firmware (Completed - Refining)
 *Mục tiêu: Xây dựng "bộ não" của hệ thống và các Task FreeRTOS cơ bản.*
 
 ### 🛠 Logic Core (Cross-platform)
 - [x] **Hardware Interface:** Định nghĩa `IHardware.h` (Abstraction Layer) để tách biệt logic và driver.
-- [x] **Command Priority Engine:** Code logic ưu tiên lệnh (Manual vs Auto) và cơ chế Lock-out 30s.
-- [x] **Unit Testing:** Viết và chạy thành công test logic trên môi trường Native (PC/Termux).
+- [x] **Command Priority Engine:** Code logic `SmartLabCore` ưu tiên lệnh (Manual vs Auto) và cơ chế Lock-out 30s.
+- [ ] **Unit Testing:** Cần cấu hình môi trường test trên Native (PC) tương ứng với cấu trúc CMake mới.
 
 ### ⚡ Firmware Implementation (ESP-IDF)
-- [ ] **Sense Task (P2):** Driver đọc DHT22 (Nhiệt độ/Độ ẩm) và LDR (Ánh sáng) qua Queue.
-- [ ] **Emergency Task (P4):** Xử lý ngắt PIR (Xâm nhập) bằng Binary Semaphore (Phản hồi <10ms).
-- [ ] **Output Controller:** Điều khiển LED RGB dựa trên trạng thái (Normal, Warning, Emergency) sử dụng Mutex.
+- [x] **Sense Task (P2):** Hoàn thiện Task đọc DHT22 (Nhiệt độ/Độ ẩm) và PIR (Chuyển động) theo chu kỳ 2s.
+- [x] **Emergency Task (P4):** Thiết lập khung xử lý khẩn cấp (Emergency Task) trên FreeRTOS.
+- [x] **Output Driver:** Triển khai điều khiển Buzzer (P3) và Log trạng thái LED RGB (GPIO 48).
+- [x] **Simulation:** Chạy thành công mô phỏng toàn diện trên Wokwi (Chip ESP32-S3).
+- [ ] **DHT22 Tuning:** Tối ưu timing đọc DHT22 để tránh lỗi 0/0 trên chip thực tế (Đang thực hiện).
 
 ---
 
-## 🌐 Phase 3: Connectivity & Backend (Mid-term: Week 3-4)
+## 🌐 Phase 3: Connectivity & Backend (Next Steps)
 *Mục tiêu: Kết nối Cloud, lưu trữ dữ liệu và hiển thị giao diện.*
 
-- [ ] **Network Task (P3):** Triển khai Wi-Fi Manager và MQTT Client trên ESP32.
-- [ ] **Backend Service:** Setup Node.js (Express), Mosquitto Broker và Redis (Device Shadow).
-- [ ] **Database Integration:** Đẩy dữ liệu chuỗi thời gian (Time-series) vào InfluxDB.
-- [ ] **Real-time Dashboard:** Xây dựng UI React đơn giản kết nối qua Socket.io để hiển thị biểu đồ và điều khiển.
-- [ ] **Power Management:** Cấu hình Modem-sleep và Light-sleep để tối ưu pin.
+- [ ] **Wi-Fi Manager:** Triển khai kết nối Wi-Fi tự động và lưu cấu hình vào NVS.
+- [ ] **MQTT Client:** Giao tiếp với Broker để gửi dữ liệu cảm biến và nhận lệnh điều khiển.
+- [ ] **NeoPixel Driver:** Triển khai thư viện `led_strip` để điều khiển LED RGB trên board sáng thật sự.
+- [ ] **Real-time Dashboard:** Xây dựng UI đơn giản (Web/Mobile) để hiển thị biểu đồ nhiệt độ/độ ẩm.
 
 ---
 
 ## 🔭 Phase 4: Expansion & Long-term Goals
-*Mục tiêu: Nâng cấp tính năng cao cấp sau khi hệ thống cơ bản đã chạy ổn định.*
-
-- [ ] **TinyML Integration:** Sử dụng mô hình AI nhỏ để phân tích mẫu chuyển động (PIR), phân biệt người và vật nuôi/nhiễu.
-- [ ] **OTA Updates:** Triển khai nạp firmware từ xa qua Wi-Fi (Over-the-Air).
-- [ ] **Multi-node Mesh:** Mở rộng hệ thống thành mạng lưới nhiều node cảm biến giao tiếp qua ESP-NOW hoặc Zigbee.
-- [ ] **Security Hardening:** Áp dụng TLS/SSL cho MQTT và xác thực JWT cho Dashboard.
-- [ ] **Mobile App:** Phát triển ứng dụng di động (Flutter/React Native) thay thế cho Web Dashboard.
+- [ ] **TinyML Integration:** Phân tích mẫu chuyển động (PIR).
+- [ ] **OTA Updates:** Nạp firmware từ xa qua Wi-Fi.
+- [ ] **Security Hardening:** Áp dụng TLS/SSL cho MQTT.
 
 ---
-*Cập nhật lần cuối: 27/03/2026 bởi Smart-Lab Sentinel Team.*
+*Cập nhật lần cuối: 29/03/2026 bởi Smart-Lab Sentinel Team.*
