@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
-#include "logic/SmartLabCore.h"
+#include "../src/logic/SmartLabCore.h"
+#include "../include/IHardware.h"
 
 // Hardware simulation for logic testing
 class MockHardware : public IHardware {
@@ -11,6 +12,12 @@ public:
 
     void setLedMode(LedMode mode) override { lastMode = mode; }
     void setAlarm(bool active) override { alarmActive = active; }
+    
+    // Mocking mandatory methods for IHardware
+    float getTemperature() override { return 25.0f; }
+    float getHumidity() override { return 60.0f; }
+    bool isMotionDetected() override { return false; }
+    
     unsigned long getMillis() override { return currentMillis; }
 };
 

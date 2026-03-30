@@ -1,39 +1,27 @@
-# --- PlatformIO ---
-.pio/
-.pioenvs/
-.piolibdeps/
-libdeps/
-
-# --- CMake & Termux ---
+# ESP-IDF Standard Ignores
 build/
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-compile_commands.json
-run_tests
-
-# --- ESP-IDF Specific ---
 sdkconfig
 sdkconfig.old
-managed_components/
 
-# --- VSCode & IDEs ---
+# IDE & Editor Configs
 .vscode/
 .idea/
-*.swp
-*.swo
+.cache/
+.clangd/
+compile_commands.json
 
-# --- Node.js / Backend ---
-node_modules/
-npm-debug.log
-.env
-.DS_Store
+# Toolchain specific
+managed_components/
+dependencies.lock
 
-# --- Python ---
-__pycache__/
-*.pyc
+# Operating System Files
+*.DS_Store
+Thumbs.db
 
-# --- Binary Artifacts ---
-*.bin
-*.elf
-*.map
+# Project-specific artifacts
+diagram.json.bak
+*.log
+
+# Unit Test artifacts
+test_build/
+bin/

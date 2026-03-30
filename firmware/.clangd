@@ -1,0 +1,23 @@
+# Cấu hình PORTABLE cho Firmware
+CompileFlags:
+  # Vì .clangd nằm trong thư mục firmware/, database sẽ nằm ở firmware/build/
+  CompilationDatabase: build/
+  Remove:
+    - -mlongcalls
+    - -fno-tree-switch-conversion
+    - -fstrict-volatile-bitfields
+    - -fno-shrink-wrap
+    - -fno-jump-tables
+    - -mfix-esp32-psram-cache-issue
+    - -fzero-init-padding-bits=all
+    - -fno-malloc-dce
+
+Index:
+  StandardLibrary: true
+
+# Tự động tìm compiler xtensa trên bất kỳ máy nào
+query-driver:
+  - "**/*xtensa-esp32s3-elf-gcc*"
+  - "**/*xtensa-esp32s3-elf-g++*"
+  - "C:/**/*xtensa-esp32s3-elf-gcc*"
+  - "C:/**/*xtensa-esp32s3-elf-g++*"
