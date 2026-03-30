@@ -4,12 +4,12 @@
 
 static const char* TAG = "ESP32Hardware";
 
-// Yolo:Bit Pins
-#define ALARM_BUZZER_PIN    GPIO_NUM_3
-#define DHT_PIN             GPIO_NUM_1
-#define PIR_PIN             GPIO_NUM_2
-#define RGB_LED_PIN         GPIO_NUM_48  // 4 NeoPixels are on this pin
-#define RGB_LED_NUM         4            // Number of LEDs in the strip
+// Yolo:Bit AIoT Kit Pins
+#define ALARM_BUZZER_PIN    GPIO_NUM_3   // Cổng P3
+#define DHT_PIN             GPIO_NUM_1   // Cổng P1
+#define PIR_PIN             GPIO_NUM_2   // Cổng P2
+#define RGB_LED_PIN         GPIO_NUM_0   // ĐANG GIẢ ĐỊNH CỔNG P0 - BẠN HÃY SỬA LẠI NẾU CẮM CỔNG KHÁC
+#define RGB_LED_NUM         4            // Module LED rời có 4 đèn 
 
 ESP32Hardware::ESP32Hardware() {
     // 1. Setup Buzzer

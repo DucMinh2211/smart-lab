@@ -73,7 +73,7 @@
     [ "esp:3", "bz1:2", "blue", [ "v0" ] ],
     [ "esp:GND.4", "rgb_strip:GND", "black", [ "v0" ] ],
     [ "esp:5V", "rgb_strip:VCC", "red", [ "v0" ] ],
-    [ "esp:48", "rgb_strip:DIN", "orange", [ "v0" ] ]
+    [ "esp:0", "rgb_strip:DIN", "orange", [ "v0" ] ]
   ],
   "dependencies": {}
 }
