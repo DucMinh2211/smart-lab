@@ -13,7 +13,7 @@ enum class LedMode {
 
 /**
  * @brief Hardware Abstraction Layer (HAL) interface
- * Decouples app logic from ESP32 SDK, enabling Unit Testing on PC.
+ * Decouples app logic from vendor-specific SDKs, enabling Unit Testing on PC.
  */
 class IHardware {
 public:
