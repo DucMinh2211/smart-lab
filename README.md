@@ -1,77 +1,98 @@
 # 🛡️ Smart-Lab Sentinel System
 
-**Smart-Lab Sentinel** is a high-performance, event-driven IoT system designed for laboratory security and environmental monitoring. Built on the **ESP-IDF** framework and **FreeRTOS**, the system ensures real-time responsiveness and robust data synchronization via a specialized **Device Shadow** mechanism.
+**Smart-Lab Sentinel** is a professional-grade, event-driven IoT ecosystem designed for laboratory security and environmental monitoring. Built on the **ESP-IDF v6.0** framework and **FreeRTOS**, the system prioritizes real-time responsiveness, modular architecture, and high reliability.
+
+![Project Demo](demo/wokwi-github.gif)
 
 ---
 
 ## 🚀 Key Features
-*   **Real-time Multitasking:** Priority-based task management (Emergency, Network, Sensing) using FreeRTOS.
-*   **Intelligent Security:** Sub-10ms response time for intrusion detection via PIR interrupts.
-*   **Hybrid Testing Workflow:** A unique 3-phase pipeline allowing development on **Termux (Android)**, PC simulators, and physical hardware.
-*   **Device Shadowing:** Ensures state consistency between the cloud and edge devices even under unstable network conditions.
-*   **Full-Stack IoT:** Integrated with a Node.js backend, MQTT broker, InfluxDB (Time-series), and Redis (Caching).
+
+*   **Real-time Multitasking:** Leverages **FreeRTOS** for priority-based task scheduling (Emergency, Sensing, and System Management).
+*   **Ultra-low Latency Response:** Utilizes **Hardware Interrupts (ISR)** and **Binary Semaphores** for sub-1ms intrusion detection.
+*   **Hardware Abstraction Layer (HAL):** Decouples business logic (`SmartLabCore`) from vendor-specific SDKs using a clean C++ Interface (`IHardware.h`).
+*   **Smart Logic Engine:** Automatic sensor-based control with **Manual Override** priority and a 30-second safety lock-out mechanism.
+*   **Intelligent Driver Fallback:** Seamlessly toggles between I2C (DHT20) and 1-Wire (DHT22) sensors based on hardware availability.
+*   **Visual Status Indicators:** Integrated 4-zone RGB NeoPixel (WS2812) feedback using the **ESP-RMT** peripheral.
 
 ---
 
-## 🛠️ Hybrid Development Pipeline (The "3-Phase" Approach)
+## 📂 Monorepo Structure
 
-This project follows a rigorous testing lifecycle to ensure logic stability before hardware deployment:
-
-### 1. Phase 1: Logic & Unit Testing (Native/Mocking)
-*   **Environment:** Termux (Android) or PC Terminal.
-*   **Tools:** CMake, Clang/GCC.
-*   **Goal:** Verify state machine logic and data processing using mocks without needing physical hardware.
-
-### 2. Phase 2: Virtual Simulation (Wokwi)
-*   **Environment:** PlatformIO + Wokwi Simulator.
-*   **Goal:** Test peripheral drivers (DHT22, RGB LED), interrupts, and FreeRTOS task scheduling in a virtual ESP32-S3 environment.
-
-### 3. Phase 3: Hardware Deployment
-*   **Device:** **OhStem Yolo Kit** (ESP32-S3).
-*   **Tools:** PlatformIO CLI/IDE.
-*   **Goal:** Final performance tuning and real-world connectivity testing.
-
----
-
-## 📂 Project Structure
 ```text
 smart-lab/
-├── src/               # Core application logic (Shared across all phases)
-├── include/           # Header files
-├── test/              # Unit tests (Unity/GTest)
-├── platformio.ini     # Build config for PC (Native & ESP32-S3)
-├── CMakeLists.txt     # Build config for Termux (Native)
-├── diagram.json       # Wokwi simulation circuit mapping
-└── backend/           # Node.js, MQTT, and Docker configuration
+├── firmware/              # ESP32-S3 Firmware (C++/FreeRTOS)
+│   ├── main/              # Application entry and Task orchestration
+│   ├── components/
+│   │   ├── logic/         # Intelligence engine (Hardware Independent)
+│   │   └── esp32/         # Physical drivers (DHT, PIR, Buzzer, LED Strip)
+│   ├── include/           # HAL Interface definitions
+│   ├── test/              # Unit tests for business logic
+│   ├── diagram.json       # Wokwi simulation circuit
+│   └── sdkconfig          # ESP-IDF system configuration
+├── backend/               # [Upcoming] Node.js, MQTT Broker, and InfluxDB
+├── README.md              # Global project documentation
+└── doc.md                 # Detailed technical architecture (Vietnamese)
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🛠️ Build Requirements
 
-### For Termux (Phase 1):
-```bash
-cmake -B build
-cmake --build build
-./build/run_tests
-```
+### Prerequisites
+*   **ESP-IDF v6.0** (or compatible latest version).
+*   **Python 3.11+** and **CMake 3.16+**.
+*   **Target Hardware:** ESP32-S3 (Specifically optimized for **OhStem Yolo:Bit V2/V3**).
 
-### For PC/Hardware (Phase 2 & 3):
-```bash
-# Build and run native tests
-pio test -e native
+### Build Instructions
+1.  **Environment Setup:**
+    ```bash
+    # Windows
+    . $HOME/esp/v6.0/esp-idf/export.ps1
+    # Linux/MacOS
+    . $HOME/esp/v6.0/esp-idf/export.sh
+    ```
 
-# Upload to OhStem Yolo Kit
-pio run -e yolo_kit --target upload
-```
+2.  **Clone and Navigate:**
+    ```bash
+    git clone https://github.com/DucMinh2211/smart-lab.git
+    cd smart-lab/firmware
+    ```
+
+3.  **Install Dependencies:**
+    The project requires the official Espressif `led_strip` component.
+    ```bash
+    idf.py add-dependency "espressif/led_strip^3.0.0"
+    ```
+
+4.  **Build and Flash:**
+    ```bash
+    idf.py set-target esp32s3
+    idf.py build
+    # To flash (Replace COMx with your actual port)
+    idf.py -p COMx flash monitor
+    ```
 
 ---
 
-## 🔧 Tech Stack
-*   **Firmware:** ESP-IDF, FreeRTOS, C/C++.
-*   **Infrastructure:** PlatformIO, CMake, Docker.
-*   **Backend:** Node.js, Mosquitto (MQTT), InfluxDB, Redis.
-*   **Hardware:** ESP32-S3 (OhStem Yolo Kit), DHT22, PIR Sensor, WS2812B RGB LED.
+## 🔧 Technology Stack
+
+*   **Firmware:** ESP-IDF v6.0, FreeRTOS, C++17.
+*   **Hardware:** ESP32-S3, WS2812B NeoPixel, I2C, DHT20/22, PIR Sensor.
+*   **LSP/IDE:** Neovim (Clangd), VS Code (Official ESP-IDF Extension).
+*   **Simulation:** Wokwi Simulator.
 
 ---
-*Developed by the Smart-Lab Sentinel Team - CS HCMUT.*
+
+## 🗺️ Pin Mapping (Yolo:Bit S3)
+
+| Component | Port | GPIO Pin | Protocol |
+| :--- | :--- | :--- | :--- |
+| **DHT20 Sensor** | P19/P20 | SCL: 19, SDA: 20 | I2C |
+| **PIR Sensor** | P2 | GPIO 2 | Digital (ISR) |
+| **Buzzer** | P3 | GPIO 3 | Digital Output |
+| **NeoPixel Strip** | P0 | GPIO 0 | RMT / WS2812 |
+| **DHT22 (Fallback)** | P1 | GPIO 1 | 1-Wire |
+
+---
+*Developed with ❤️ by the Smart-Lab Sentinel Team - CS HCMUT.*
