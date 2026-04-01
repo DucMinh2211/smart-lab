@@ -2,6 +2,8 @@
 #include "esp_timer.h"
 #include "rom/ets_sys.h"
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 static const char* TAG = "DHT22_DRIVER";
 
@@ -25,43 +27,45 @@ bool DHT22::read() {
     // 1. Send Start Signal
     gpio_set_direction(pin, GPIO_MODE_OUTPUT);
     gpio_set_level(pin, 0);
-    ets_delay_us(18000); // Pull down for 18ms
+    ets_delay_us(18000); // 18ms Start pulse
     
     gpio_set_level(pin, 1);
-    ets_delay_us(40);    // Pull up for 40us
+    ets_delay_us(40);    // 40us Wait
     
     gpio_set_direction(pin, GPIO_MODE_INPUT);
 
-    // 2. Wait for Sensor Response
-    if (wait_for_level(0, 100) < 0) {
-        ESP_LOGW(TAG, "Step 1: Sensor didn't pull low!");
-        return false; 
-    }
-    if (wait_for_level(1, 100) < 0) {
-        ESP_LOGW(TAG, "Step 2: Sensor didn't pull high!");
-        return false;
-    }
-    if (wait_for_level(0, 100) < 0) {
-        ESP_LOGW(TAG, "Step 3: Sensor didn't start sending data!");
+    // 2. Read 40 bits (Disable interrupts for precise timing)
+    portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
+    taskENTER_CRITICAL(&mux);
+
+    // Initial sequence: Low(80us) -> High(80us) -> Start Data
+    if (wait_for_level(0, 100) < 0 || wait_for_level(1, 100) < 0 || wait_for_level(0, 100) < 0) {
+        taskEXIT_CRITICAL(&mux);
+        ESP_LOGW(TAG, "Sensor handshake failed!");
         return false;
     }
 
-    // 3. Read 40 bits
     for (int i = 0; i < 40; i++) {
-        if (wait_for_level(1, 100) < 0) return false; // Wait for High start
-        int high_duration = wait_for_level(0, 100);   // Measure High duration
-        if (high_duration < 0) return false;
+        // Each bit starts with a ~50us Low, then a High pulse
+        if (wait_for_level(1, 100) < 0) { taskEXIT_CRITICAL(&mux); return false; }
+        
+        // Measure the length of the High pulse
+        int64_t t_start = esp_timer_get_time();
+        if (wait_for_level(0, 100) < 0) { taskEXIT_CRITICAL(&mux); return false; }
+        int64_t high_duration = esp_timer_get_time() - t_start;
 
         data[i / 8] <<= 1;
-        if (high_duration > 40) { // DHT22 '1' is ~70us High, '0' is ~26us
+        // DHT22: '0' = 26us High, '1' = 70us High. Threshold = 45us.
+        if (high_duration > 45) {
             data[i / 8] |= 1;
         }
     }
+    taskEXIT_CRITICAL(&mux);
 
-    // 4. Verify Checksum
-    uint8_t checksum = (data[0] + data[1] + data[2] + data[3]) & 0xFF;
-    if (data[4] != checksum) {
-        ESP_LOGW(TAG, "Checksum Error! Expected %02X, got %02X", checksum, data[4]);
+    // 3. Verify Checksum
+    uint8_t expected = (data[0] + data[1] + data[2] + data[3]) & 0xFF;
+    if (data[4] != expected) {
+        ESP_LOGW(TAG, "Checksum Error! Expected %02X, got %02X", expected, data[4]);
         return false;
     }
 

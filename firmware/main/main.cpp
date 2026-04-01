@@ -5,7 +5,7 @@
 #include "freertos/semphr.h"
 #include "esp_log.h"
 
-#include "logic/SmartLabCore.h"
+#include "SmartLabCore.h"
 #include "ESP32Hardware.h"
 
 static const char* TAG = "MAIN";
@@ -66,8 +66,8 @@ extern "C" void app_main() {
     
     // Install global GPIO ISR service
     gpio_install_isr_service(0);
-    // Bind PIR pin (GPIO 2) to the handler
-    gpio_isr_handler_add(GPIO_NUM_2, pir_isr_handler, NULL);
+    // Bind PIR pin (macro from header) to the handler
+    gpio_isr_handler_add((gpio_num_t)PIR_PIN, pir_isr_handler, NULL);
 
     // 3. Create Tasks
     xTaskCreatePinnedToCore(sense_task, "sense_task", 4096, NULL, 2, NULL, 1);
