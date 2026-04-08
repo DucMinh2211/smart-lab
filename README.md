@@ -108,15 +108,11 @@ Both modes support bidirectional communication with the mobile app for real-time
 
 ---
 
-## 🗺️ Pin Mapping (Yolo:Bit S3)
+## Video Demo
+### Wokwi Simulation
 
-| Component | Port | GPIO Pin | Protocol |
-| :--- | :--- | :--- | :--- |
-| **DHT20 Sensor** | P19/P20 | SCL: 19, SDA: 20 | I2C |
-| **PIR Sensor** | P2 | GPIO 2 | Digital (ISR) |
-| **Buzzer** | P3 | GPIO 3 | Digital Output |
-| **NeoPixel Strip** | P0 | GPIO 0 | RMT / WS2812 |
-| **DHT22 (Fallback)** | P1 | GPIO 1 | 1-Wire |
+https://github.com/user-attachments/assets/af5ed64a-705d-4830-b602-be91f1737e7b
+
 
 ---
 *Developed with ❤️ by the Smart-Lab Sentinel Team - CS HCMUT.*
