@@ -2,7 +2,7 @@
 
 **Smart-Lab Sentinel** is a professional-grade, event-driven IoT ecosystem designed for laboratory security and environmental monitoring. Built on the **ESP-IDF v6.0** framework and **FreeRTOS**, the system prioritizes real-time responsiveness, modular architecture, and high reliability.
 
-![Project Demo](demo/wokwi-github.gif)
+![Project Demo](demo/wokwi-demo.gif)
 
 ---
 
