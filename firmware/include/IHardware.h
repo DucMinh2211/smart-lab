@@ -8,7 +8,16 @@ enum class LedMode {
     OFF,
     NORMAL,    // Green: System stable
     WARNING,   // Orange: High temperature
-    EMERGENCY  // Flashing Red: Intrusion detected
+    EMERGENCY,  // Flashing Red: Intrusion detected
+    LIGHTING    // Blue: Guest mode motion detected
+};
+
+/**
+ * @brief Defines system operation modes
+ */
+enum class OperationMode {
+    GUEST_TAKING,  // Comfort automation: Auto lights, smart ventilation
+    SENTINEL       // Security monitoring: Intrusion alerts, priority response
 };
 
 /**

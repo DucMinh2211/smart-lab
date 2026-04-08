@@ -82,10 +82,11 @@ float ESP32Hardware::getHumidity() {
 void ESP32Hardware::setLedMode(LedMode mode) {
     uint32_t r = 0, g = 0, b = 0;
     switch (mode) {
-        case LedMode::NORMAL:    g = 100; break;
-        case LedMode::WARNING:   r = 100; g = 50; break;
-        case LedMode::EMERGENCY: r = 255; break;
-        case LedMode::OFF:       break;
+        case LedMode::NORMAL:       g = 100; break;
+        case LedMode::WARNING:      r = 100; g = 50; break;
+        case LedMode::EMERGENCY:    r = 255; break;
+        case LedMode::LIGHTING:     b = 100; break;
+        case LedMode::OFF:          r = 0, g = 0, b = 0; break;
     }
     for (int i = 0; i < RGB_LED_NUM; i++) led_strip_set_pixel(led_strip, i, r, g, b);
     led_strip_refresh(led_strip);

@@ -11,9 +11,11 @@
 *   **Real-time Multitasking:** Leverages **FreeRTOS** for priority-based task scheduling (Emergency, Sensing, and System Management).
 *   **Ultra-low Latency Response:** Utilizes **Hardware Interrupts (ISR)** and **Binary Semaphores** for sub-1ms intrusion detection.
 *   **Hardware Abstraction Layer (HAL):** Decouples business logic (`SmartLabCore`) from vendor-specific SDKs using a clean C++ Interface (`IHardware.h`).
+*   **Dual-Mode Operation:** Seamlessly switch between **Guest-taking Mode** (comfort automation) and **Sentinel Mode** (security monitoring) via physical button (ISR) or Serial command.
+*   **State Persistence:** Integrated **NVS (Non-Volatile Storage)** to remember operation modes and user configurations across reboots.
 *   **Smart Logic Engine:** Automatic sensor-based control with **Manual Override** priority and a 30-second safety lock-out mechanism.
 *   **Intelligent Driver Fallback:** Seamlessly toggles between I2C (DHT20) and 1-Wire (DHT22) sensors based on hardware availability.
-*   **Visual Status Indicators:** Integrated 4-zone RGB NeoPixel (WS2812) feedback using the **ESP-RMT** peripheral.
+*   **Visual Status Indicators:** Integrated 4-zone RGB NeoPixel (WS2812) feedback with distinct patterns for Normal, Warning, Emergency, and Lighting states.
 
 ---
 
@@ -72,6 +74,28 @@ smart-lab/
     # To flash (Replace COMx with your actual port)
     idf.py -p COMx flash monitor
     ```
+
+---
+
+## 🎯 Operating Modes
+
+The system supports two distinct operational modes, switchable via the physical button (A), Serial commands, or the mobile app:
+
+### 🏠 Guest-taking Mode (Comfort Automation)
+*Designed for daily lab usage with automatic convenience features:*
+*   **Auto-Lighting:** Automatically turns on LED strip when motion is detected (via PIR sensor).
+*   **Smart Ventilation:** Activates buzzer/fan when temperature exceeds threshold (e.g., >30°C).
+*   **Gentle Feedback:** Soft RGB lighting patterns indicate normal operation.
+*   **Manual Toggle:** Press Button A or type `guest` in Serial to activate.
+
+### 🛡️ Sentinel Mode (Security Monitoring)
+*High-security mode for after-hours or restricted access scenarios:*
+*   **Intrusion Alert:** Triggers loud alarm and emergency LED patterns when motion is detected (via ISR for <1ms latency).
+*   **Environmental Warnings:** Alerts on abnormal temperature/humidity levels.
+*   **Priority Response:** Emergency Task handles security events with highest priority.
+*   **Manual Toggle:** Press Button A or type `sentinel` in Serial to activate.
+
+Both modes support bidirectional communication with the mobile app for real-time monitoring and control.
 
 ---
 

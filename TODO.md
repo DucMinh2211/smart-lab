@@ -32,21 +32,45 @@ Dự án phát triển hệ thống giám sát phòng thí nghiệm thông minh 
 
 ---
 
-## 🚀 Phase 3: Kết nối & Backend (Bước tiếp theo)
-*Mục tiêu: Kết nối Cloud, lưu trữ dữ liệu và hiển thị giao diện.*
+## ✅ Phase 3: Custom Mode & Dual Operation (Hoàn thành)
+*Mục tiêu: Triển khai 2 chế độ hoạt động (Guest-taking & Sentinel) có thể chuyển đổi động.*
 
-- [ ] **Wi-Fi Manager:** Triển khai kết nối Wi-Fi tự động và cơ chế tự động kết nối lại.
-- [ ] **MQTT Client:** Giao tiếp với Broker để gửi dữ liệu cảm biến và nhận lệnh điều khiển.
-- [ ] **Phát triển Backend:** Khởi tạo dịch vụ Node.js/Express trong thư mục `backend/`.
-- [ ] **Tích hợp Database:** Thiết lập InfluxDB (dữ liệu thời gian) và Redis (Device Shadow).
-- [ ] **Dashboard thời gian thực:** Xây dựng giao diện web hiển thị các thông số môi trường.
+### 🛠 Firmware Enhancement
+- [x] **State Machine:** Xây dựng Mode State Machine trong `SmartLabCore` (Guest vs Sentinel).
+- [x] **Guest Mode Logic:** Triển khai logic tự động bật đèn (PIR) và quạt (nhiệt độ cao).
+- [x] **Sentinel Mode Logic:** Giữ nguyên logic cảnh báo xâm nhập hiện tại.
+- [x] **Mode Transition:** Xử lý chuyển đổi mode an toàn với Semaphore và Task.
+- [x] **NVS Storage:** Lưu mode hiện tại và cấu hình timer vào NVS để khôi phục sau reset.
+- [x] **LED Feedback:** Thiết kế hiệu ứng LED khác biệt cho từng mode (Lighting, Warning, Emergency, Normal).
+- [x] **Manual Control:** Hỗ trợ chuyển mode qua nút bấm vật lý (ISR) và Serial command.
 
 ---
 
-## 🔭 Phase 4: Mở rộng & Mục tiêu dài hạn
+## 🚀 Phase 4: Connectivity & Mobile App (Đang thực hiện)
+*Mục tiêu: Kết nối hệ thống với Internet và xây dựng giao diện điều khiển.*
+
+### 📡 Connectivity (Firmware)
+- [ ] **Wi-Fi Manager:** Triển khai kết nối Wi-Fi tự động và cơ chế tự động kết nối lại.
+- [ ] **MQTT Client:** Giao tiếp với Broker để:
+    - **Publish:** Gửi dữ liệu cảm biến + trạng thái mode hiện tại.
+    - **Subscribe:** Nhận lệnh chuyển mode và điều khiển từ app.
+- [ ] **Command Handler:** Xử lý MQTT commands (`SET_MODE`, `MANUAL_OVERRIDE`, etc.).
+
+### 🌐 Backend & Mobile App
+- [ ] **Phát triển Backend:** Khởi tạo dịch vụ Node.js/Express trong thư mục `backend/`.
+- [ ] **Tích hợp Database:** Thiết lập InfluxDB (dữ liệu thời gian) và Redis (Device Shadow).
+- [ ] **Mobile App:** Xây dựng giao diện điều khiển (React Native/Flutter):
+    - Hiển thị mode hiện tại và dữ liệu real-time.
+    - Nút chuyển đổi mode (Guest ↔ Sentinel).
+    - Biểu đồ nhiệt độ/độ ẩm theo thời gian.
+- [ ] **Real-time Communication:** WebSocket hoặc MQTT over WebSocket cho app.
+
+---
+
+## 🔭 Phase 5: Mở rộng & Mục tiêu dài hạn
 - [ ] **Tích hợp TinyML:** Phân tích mẫu chuyển động từ cảm biến PIR.
 - [ ] **Cập nhật OTA:** Nạp firmware từ xa thông qua Wi-Fi.
 - [ ] **Bảo mật hệ thống:** Áp dụng TLS/SSL cho các kết nối MQTT.
 
 ---
-*Cập nhật lần cuối: 30/03/2026 bởi Smart-Lab Sentinel Team.*
+*Cập nhật lần cuối: 07/04/2026 bởi Smart-Lab Sentinel Team.*

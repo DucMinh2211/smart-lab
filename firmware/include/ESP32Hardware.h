@@ -11,12 +11,13 @@
 
 #if defined(CONFIG_IDF_TARGET_ESP32S3)
     // YOLO:BIT V3 (ESP32-S3) Pin Mapping
-    #define I2C_SDA_PIN         GPIO_NUM_19  // P20
-    #define I2C_SCL_PIN         GPIO_NUM_20  // P19
+    #define I2C_SDA_PIN         GPIO_NUM_41  // P20
+    #define I2C_SCL_PIN         GPIO_NUM_42  // P19
     #define ALARM_BUZZER_PIN    GPIO_NUM_38  // audio
     #define PIR_PIN             GPIO_NUM_1   // P0
     #define DHT22_PIN           GPIO_NUM_2   // P1
     #define RGB_LED_PIN         GPIO_NUM_15  // P14
+    #define MODE_BUTTON_PIN     GPIO_NUM_0   // A - Button to toggle mode
 #elif defined(CONFIG_IDF_TARGET_ESP32)
     // YOLO:BIT V2 (ESP32) Pin Mapping based on doc.md
     #define I2C_SDA_PIN         GPIO_NUM_21 // SDA
@@ -25,6 +26,7 @@
     #define PIR_PIN             GPIO_NUM_26 // P0
     #define DHT22_PIN           GPIO_NUM_25 // P1
     #define RGB_LED_PIN         GPIO_NUM_23 // P14
+    #define MODE_BUTTON_PIN     GPIO_NUM_35 // A - Button to toggle mode
 #endif
 #define RGB_LED_NUM         4
 
