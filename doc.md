@@ -122,5 +122,32 @@ Dự án tuân thủ nghiêm ngặt mô hình Component của ESP-IDF:
 |--------|---------------------|-----------------------------------------------|
 |pin8    |18 (giống pin13)     |17                                             |
 |pin9    |23 (giống pin15)     |16                                             |
+
+
+### Sơ đồ chân của Yolo:Bit
+| Tên Pin     | GPIO Thực Tế |
+|---------------|---------------|
+| P9           | 23              |
+| P8           | 18              |
+| P14          | 19              |
+| P15          | 23              |
+| P16          | 5               |
+| P20 (I2C)    | 21              |
+| P10          | 26              |
+| P5           | 35              |
+| P4           | 15              |
+| P7           | 25 (Buzzer)     |
+| P6           | 12              |
+| P1           | 33              |
+| P0           | 32              |
+| P3           | 2               |
+| P2           | 27              |
+| P11          | 14              |
+| P12          | 13              |
+| P13          | 18              |
+| P19 (I2C)    | 22              |
+| Button A     | Pin(35)         |
+| LED          | Pin(4)          |
+| Button B     | Pin(14)         |
 ---
 *Tài liệu được biên soạn bởi đội ngũ Smart-Lab Sentinel - CS HCMUT.*

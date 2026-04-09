@@ -71,8 +71,8 @@ void SmartLabCore::handleGuestModeLogic(float temp, float humidity, bool motion)
         newMode = LedMode::LIGHTING;
         lastMotionTime = currentTime;
         lightIsOn = true;
-    } else if (temp > 30.0f) {
-        // No motion but high temperature → Warning + fan
+    } else if (temp > 30.0f || humidity > 60.0f) {
+        // No motion but high temperature or humidity → Warning + fan
         newMode = LedMode::WARNING;
         newAlarm = true;
         lightIsOn = false; // Light off when in temp warning mode
@@ -106,8 +106,8 @@ void SmartLabCore::handleSentinelModeLogic(float temp, float humidity, bool moti
         // Motion detected → Emergency alarm
         newMode = LedMode::EMERGENCY;
         newAlarm = true;
-    } else if (temp > 35.0f) {
-        // High temperature → Warning
+    } else if (temp > 35.0f || humidity > 70.0f) {
+        // High temperature or humidity → Warning
         newMode = LedMode::WARNING;
     } else {
         // Normal monitoring

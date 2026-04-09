@@ -23,11 +23,9 @@ https://github.com/user-attachments/assets/8f5cd46a-6281-4cb1-9fbd-a98536c27a20
 *   **Real-time Multitasking:** Leverages **FreeRTOS** for priority-based task scheduling (Emergency, Sensing, and System Management).
 *   **Ultra-low Latency Response:** Utilizes **Hardware Interrupts (ISR)** and **Binary Semaphores** for sub-1ms intrusion detection.
 *   **Hardware Abstraction Layer (HAL):** Decouples business logic (`SmartLabCore`) from vendor-specific SDKs using a clean C++ Interface (`IHardware.h`).
-*   **Dual-Mode Operation:** Seamlessly switch between **Guest-taking Mode** (comfort automation) and **Sentinel Mode** (security monitoring) via physical button (ISR) or Serial command.
-*   **State Persistence:** Integrated **NVS (Non-Volatile Storage)** to remember operation modes and user configurations across reboots.
-*   **Smart Logic Engine:** Automatic sensor-based control with **Manual Override** priority and a 30-second safety lock-out mechanism.
-*   **Intelligent Driver Fallback:** Seamlessly toggles between I2C (DHT20) and 1-Wire (DHT22) sensors based on hardware availability.
-*   **Visual Status Indicators:** Integrated 4-zone RGB NeoPixel (WS2812) feedback with distinct patterns for Normal, Warning, Emergency, and Lighting states.
+*   **Dual-Mode Operation:** Seamlessly switch between **Guest-taking Mode** (comfort automation) and **Sentinel Mode** (security monitoring) via physical button (ISR), Serial command suite, or upcoming mobile app.
+*   **Intelligent Serial Control:** Comprehensive command interface (`guest`, `sentinel`, `timer`, `volume`, `status`) for real-time system tuning and debugging.
+*   **State Persistence:** Integrated **NVS (Non-Volatile Storage)** to remember operation modes, alarm volume, and auto-light timers across reboots.
 
 ---
 
@@ -36,17 +34,17 @@ https://github.com/user-attachments/assets/8f5cd46a-6281-4cb1-9fbd-a98536c27a20
 ```text
 smart-lab/
 ├── firmware/              # ESP32-S3 Firmware (C++/FreeRTOS)
-│   ├── main/              # Application entry and Task orchestration
-│   ├── components/
-│   │   ├── logic/         # Intelligence engine (Hardware Independent)
-│   │   └── esp32/         # Physical drivers (DHT, PIR, Buzzer, LED Strip)
-│   ├── include/           # HAL Interface definitions
+│   ├── main/              # Application entry, Task orchestration, ISR
+│   ├── src/
+│   │   ├── logic/         # Intelligence engine (SmartLabCore)
+│   │   └── driver/        # HAL Implementation (DHT20/22, Buzzer, NeoPixel)
+│   ├── include/           # HAL & Logic Interface definitions
 │   ├── test/              # Unit tests for business logic
 │   ├── diagram.json       # Wokwi simulation circuit
 │   └── sdkconfig          # ESP-IDF system configuration
-├── backend/               # [Upcoming] Node.js, MQTT Broker, and InfluxDB
 ├── README.md              # Global project documentation
-└── doc.md                 # Detailed technical architecture (Vietnamese)
+├── doc.md                 # Detailed technical architecture
+└── TODO.md                # Project roadmap and progress tracking
 ```
 
 ---
@@ -54,9 +52,9 @@ smart-lab/
 ## 🛠️ Build Requirements
 
 ### Prerequisites
-*   **ESP-IDF v6.0** (or compatible latest version).
+*   **ESP-IDF v6.0** (or latest stable release).
 *   **Python 3.11+** and **CMake 3.16+**.
-*   **Target Hardware:** ESP32-S3 (Specifically optimized for **OhStem Yolo:Bit V2/V3**).
+*   **Target Hardware:** ESP32-S3 (Optimized for **OhStem Yolo:Bit V2/V3**).
 
 ### Build Instructions
 1.  **Environment Setup:**

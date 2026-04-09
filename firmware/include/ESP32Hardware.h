@@ -22,10 +22,10 @@
     // YOLO:BIT V2 (ESP32) Pin Mapping based on doc.md
     #define I2C_SDA_PIN         GPIO_NUM_21 // SDA
     #define I2C_SCL_PIN         GPIO_NUM_22 // SCL
-    #define ALARM_BUZZER_PIN    GPIO_NUM_14 // Buzzer
-    #define PIR_PIN             GPIO_NUM_26 // P0
-    #define DHT22_PIN           GPIO_NUM_25 // P1
-    #define RGB_LED_PIN         GPIO_NUM_23 // P14
+    #define ALARM_BUZZER_PIN    GPIO_NUM_25 // Buzzer
+    #define PIR_PIN             GPIO_NUM_32 // P0
+    #define DHT22_PIN           GPIO_NUM_33 // P1
+    #define RGB_LED_PIN         GPIO_NUM_19 // P14
     #define MODE_BUTTON_PIN     GPIO_NUM_35 // A - Button to toggle mode
 #endif
 #define RGB_LED_NUM         4
@@ -35,12 +35,14 @@ private:
     ITempHumSensor* sensor; // Abstraction
     led_strip_handle_t led_strip;
     i2c_master_bus_handle_t i2c_bus;
+    int alarm_volume = 50; // Default 50%
 
 public:
     ESP32Hardware();
     
     void setLedMode(LedMode mode) override;
     void setAlarm(bool active) override;
+    void setAlarmVolume(int percent) override;
     
     float getTemperature() override;
     float getHumidity() override;

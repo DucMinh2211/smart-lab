@@ -2,6 +2,7 @@
 #include "esp_timer.h"
 #include "esp_log.h"
 #include "driver/gpio.h" 
+#include "driver/ledc.h"
 #include "led_strip_types.h"
 
 static const char* TAG = "ESP32Hardware";
@@ -29,17 +30,9 @@ ESP32Hardware::ESP32Hardware() {
         ESP_LOGI(TAG, "Sensor: DHT20 not found, fallback to DHT22 (GPIO %d).", DHT22_PIN);
     }
 
-    // 3. Setup GPIOs (Buzzer, PIR)
+    // 3. Setup GPIOs (PIR)
     gpio_config_t io_conf = {};
     
-    // Buzzer
-    io_conf.intr_type = GPIO_INTR_DISABLE;
-    io_conf.mode = GPIO_MODE_OUTPUT;
-    io_conf.pin_bit_mask = (1ULL << ALARM_BUZZER_PIN);
-    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
-    gpio_config(&io_conf);
-
     // PIR Sensor with Interrupt
     io_conf.intr_type = GPIO_INTR_POSEDGE;
     io_conf.mode = GPIO_MODE_INPUT;
@@ -48,7 +41,32 @@ ESP32Hardware::ESP32Hardware() {
     io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     gpio_config(&io_conf);
 
-    // 4. Setup NeoPixel Strip
+    // 4. Setup PWM for Buzzer (to make it louder/support passive buzzers)
+    ledc_timer_config_t ledc_timer = {
+        .speed_mode       = LEDC_LOW_SPEED_MODE,
+        .duty_resolution  = LEDC_TIMER_10_BIT,
+        .timer_num        = LEDC_TIMER_0,
+        .freq_hz          = 2000, // 2kHz
+        .clk_cfg          = LEDC_AUTO_CLK,
+        .deconfigure      = false,
+    };
+    ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
+
+    ledc_channel_config_t ledc_channel = {
+        .gpio_num       = ALARM_BUZZER_PIN,
+        .speed_mode     = LEDC_LOW_SPEED_MODE,
+        .channel        = LEDC_CHANNEL_0,
+        .intr_type      = LEDC_INTR_DISABLE,
+        .timer_sel      = LEDC_TIMER_0,
+        .duty           = 0,
+        .hpoint         = 0,
+        .sleep_mode     = LEDC_SLEEP_MODE_NO_ALIVE_NO_PD,
+        .flags          = {0},
+        .deconfigure    = false,
+    };
+    ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
+
+    // 5. Setup NeoPixel Strip
     led_strip_config_t strip_conf = {};
     strip_conf.strip_gpio_num = RGB_LED_PIN;
     strip_conf.max_leds = RGB_LED_NUM;
@@ -93,7 +111,23 @@ void ESP32Hardware::setLedMode(LedMode mode) {
 }
 
 void ESP32Hardware::setAlarm(bool active) {
-    gpio_set_level((gpio_num_t)ALARM_BUZZER_PIN, active ? 1 : 0);
+    if (active) {
+        // Map 0-100% volume to 0-512 duty (out of 1024 resolution)
+        // A buzzer's maximum loudness is usually at 50% duty cycle.
+        uint32_t duty = (alarm_volume * 512) / 100;
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, duty);
+        ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+    } else {
+        ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
+        ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+    }
+}
+
+void ESP32Hardware::setAlarmVolume(int percent) {
+    if (percent < 0) percent = 0;
+    if (percent > 100) percent = 100;
+    alarm_volume = percent;
+    ESP_LOGI(TAG, "Buzzer volume set to %d%%", alarm_volume);
 }
 
 bool ESP32Hardware::isMotionDetected() {

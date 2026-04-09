@@ -5,8 +5,10 @@
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
 #include "esp_log.h"
+#include "esp_vfs_dev.h"
 #include "driver/gpio.h"
 #include "driver/uart.h"
+#include "driver/uart_vfs.h"
 
 #include "SmartLabCore.h"
 #include "ESP32Hardware.h"
@@ -22,7 +24,6 @@ SemaphoreHandle_t modeButtonSemaphore;
 
 // Command buffer for Serial input
 #define CMD_BUF_SIZE 64
-static char cmdBuffer[CMD_BUF_SIZE];
 
 // ISR Handler: Runs when the PIR pin voltage transitions to HIGH
 static void IRAM_ATTR pir_isr_handler(void* arg) {
@@ -122,62 +123,75 @@ void mode_button_task(void* pvParameters) {
 
 // Task: Command handler (Serial/UART for testing)
 void command_task(void* pvParameters) {
-    ESP_LOGI(TAG, "Command Task started. Type 'guest' or 'sentinel' to switch modes.");
+    ESP_LOGI(TAG, "Command Task started. Type commands (guest, sentinel, status, timer).");
     
+    char line_buf[CMD_BUF_SIZE];
+    int line_pos = 0;
+
     while (1) {
-        int len = uart_read_bytes(UART_NUM_0, (uint8_t*)cmdBuffer, CMD_BUF_SIZE - 1, pdMS_TO_TICKS(100));
+        uint8_t ch;
+        // Read one byte at a time
+        int len = uart_read_bytes(UART_NUM_0, &ch, 1, pdMS_TO_TICKS(10));
+        
         if (len > 0) {
-            cmdBuffer[len] = '\0';
-            
-            // Trim newline/carriage return
-            for (int i = 0; i < len; i++) {
-                if (cmdBuffer[i] == '\n' || cmdBuffer[i] == '\r') {
-                    cmdBuffer[i] = '\0';
-                    break;
+            if (ch == '\n' || ch == '\r') {
+                // Echo newline to move cursor down on laptop screen
+                uart_write_bytes(UART_NUM_0, "\r\n", 2);
+
+                if (line_pos > 0) {
+                    line_buf[line_pos] = '\0';
+                    // Execute logic
+                    if (strcmp(line_buf, "guest") == 0) {
+                        appLogic->setOperationMode(OperationMode::GUEST_TAKING);
+                        ModeStorage::saveMode(OperationMode::GUEST_TAKING);
+                        ESP_LOGI(TAG, ">> Mode: GUEST");
+                    } 
+                    else if (strcmp(line_buf, "sentinel") == 0) {
+                        appLogic->setOperationMode(OperationMode::SENTINEL);
+                        ModeStorage::saveMode(OperationMode::SENTINEL);
+                        ESP_LOGI(TAG, ">> Mode: SENTINEL");
+                    }
+                    else if (strcmp(line_buf, "status") == 0) {
+                        OperationMode mode = appLogic->getOperationMode();
+                        const char* modeStr = (mode == OperationMode::GUEST_TAKING) ? "GUEST" : "SENTINEL";
+                        ESP_LOGI(TAG, "Status: %s", modeStr);
+                    }
+                    else if (strncmp(line_buf, "timer ", 6) == 0) {
+                        int seconds = atoi(line_buf + 6);
+                        if (seconds > 0) {
+                            unsigned long durationMs = seconds * 1000;
+                            appLogic->setAutoLightDuration(durationMs);
+                            ModeStorage::saveAutoLightDuration(durationMs);
+                            ESP_LOGI(TAG, ">> Timer: %d s", seconds);
+                        }
+                    }
+                    else if (strncmp(line_buf, "volume ", 7) == 0) {
+                        int vol = atoi(line_buf + 7);
+                        hardware->setAlarmVolume(vol);
+                        ESP_LOGI(TAG, ">> Volume set to %d%%", vol);
+                    }
+                    else {
+                        ESP_LOGW(TAG, "!! Unknown: %s", line_buf);
+                    }
+                    line_pos = 0; // Reset
                 }
-            }
-            
-            if (strlen(cmdBuffer) == 0) continue;
-            
-            ESP_LOGI(TAG, "Received command: %s", cmdBuffer);
-            
-            if (strcmp(cmdBuffer, "guest") == 0) {
-                ESP_LOGI(TAG, "Switching to GUEST_TAKING mode...");
-                appLogic->setOperationMode(OperationMode::GUEST_TAKING);
-                ModeStorage::saveMode(OperationMode::GUEST_TAKING);
-                ESP_LOGI(TAG, "Mode switched and saved!");
             } 
-            else if (strcmp(cmdBuffer, "sentinel") == 0) {
-                ESP_LOGI(TAG, "Switching to SENTINEL mode...");
-                appLogic->setOperationMode(OperationMode::SENTINEL);
-                ModeStorage::saveMode(OperationMode::SENTINEL);
-                ESP_LOGI(TAG, "Mode switched and saved!");
-            }
-            else if (strcmp(cmdBuffer, "status") == 0) {
-                OperationMode mode = appLogic->getOperationMode();
-                const char* modeStr = (mode == OperationMode::GUEST_TAKING) ? "GUEST_TAKING" : "SENTINEL";
-                unsigned long timer = appLogic->getAutoLightDuration();
-                ESP_LOGI(TAG, "Current mode: %s", modeStr);
-                ESP_LOGI(TAG, "Auto-light timer: %lu seconds", timer / 1000);
-            }
-            else if (strncmp(cmdBuffer, "timer ", 6) == 0) {
-                // Command: timer <seconds>
-                int seconds = atoi(cmdBuffer + 6);
-                if (seconds > 0 && seconds <= 1000) {
-                    unsigned long durationMs = seconds * 1000;
-                    appLogic->setAutoLightDuration(durationMs);
-                    ModeStorage::saveAutoLightDuration(durationMs);
-                    ESP_LOGI(TAG, "Auto-light timer set to %d seconds", seconds);
-                } else {
-                    ESP_LOGW(TAG, "Invalid timer value (must be 1-1000 seconds)");
+            else if (ch == '\b' || ch == 127) { // Support Backspace/Delete
+                if (line_pos > 0) {
+                    line_pos--;
+                    uart_write_bytes(UART_NUM_0, "\b \b", 3);
                 }
             }
             else {
-                ESP_LOGW(TAG, "Unknown command. Available: guest, sentinel, status, timer <seconds>");
+                // ECHO: Send the character back to your laptop screen
+                if (line_pos < CMD_BUF_SIZE - 1) {
+                    uart_write_bytes(UART_NUM_0, &ch, 1);
+                    line_buf[line_pos++] = (char)ch;
+                }
             }
         }
         
-        vTaskDelay(pdMS_TO_TICKS(50));
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
@@ -203,6 +217,9 @@ extern "C" void app_main() {
     };
     ESP_ERROR_CHECK(uart_param_config(UART_NUM_0, &uart_config));
     ESP_ERROR_CHECK(uart_driver_install(UART_NUM_0, 1024, 0, 0, NULL, 0));
+    
+    // Tell VFS to use the UART driver for standard I/O (essential for combined logging/input)
+    uart_vfs_dev_use_driver(UART_NUM_0);
     
     // 3. Load saved operation mode and settings
     OperationMode savedMode = ModeStorage::loadMode();

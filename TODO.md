@@ -73,4 +73,4 @@ Dự án phát triển hệ thống giám sát phòng thí nghiệm thông minh 
 - [ ] **Bảo mật hệ thống:** Áp dụng TLS/SSL cho các kết nối MQTT.
 
 ---
-*Cập nhật lần cuối: 07/04/2026 bởi Smart-Lab Sentinel Team.*
+*Cập nhật lần cuối: 10/04/2026 bởi Smart-Lab Sentinel Team.*

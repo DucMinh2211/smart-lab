@@ -39,6 +39,11 @@ public:
     virtual void setAlarm(bool active) = 0;
 
     /**
+     * @brief Sets the buzzer volume level (0-100%)
+     */
+    virtual void setAlarmVolume(int percent) = 0;
+
+    /**
      * @brief Gets current temperature (°C)
      */
     virtual float getTemperature() = 0;
