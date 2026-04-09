@@ -4,6 +4,18 @@
 
 ![Project Demo](demo/wokwi-demo.gif)
 
+
+---
+
+## Video Demo
+### Wokwi Simulation
+
+https://github.com/user-attachments/assets/af5ed64a-705d-4830-b602-be91f1737e7b
+
+## ESP32 Hardware
+
+https://github.com/user-attachments/assets/8f5cd46a-6281-4cb1-9fbd-a98536c27a20
+
 ---
 
 ## 🚀 Key Features
@@ -105,14 +117,6 @@ Both modes support bidirectional communication with the mobile app for real-time
 *   **Hardware:** ESP32-S3, WS2812B NeoPixel, I2C, DHT20/22, PIR Sensor.
 *   **LSP/IDE:** Neovim (Clangd), VS Code (Official ESP-IDF Extension).
 *   **Simulation:** Wokwi Simulator.
-
----
-
-## Video Demo
-### Wokwi Simulation
-
-https://github.com/user-attachments/assets/af5ed64a-705d-4830-b602-be91f1737e7b
-
 
 ---
 *Developed with ❤️ by the Smart-Lab Sentinel Team - CS HCMUT.*
