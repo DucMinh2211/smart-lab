@@ -18,6 +18,82 @@ https://github.com/user-attachments/assets/8f5cd46a-6281-4cb1-9fbd-a98536c27a20
 
 ---
 
+## 🏗️ Technical Architecture
+
+The system is built with a focus on **Dependency Inversion** and **Real-time Responsiveness**, ensuring the firmware is both testable and highly reliable.
+
+### 1. Hardware Abstraction Layer (HAL)
+By decoupling the high-level logic from the low-level hardware drivers, the `SmartLabCore` can be unit-tested on a PC without physical hardware.
+
+```mermaid
+graph TD
+    subgraph "Application Layer (Platform Agnostic)"
+        SLC[SmartLabCore]
+        MS[ModeStorage - NVS Persistence]
+    end
+
+    subgraph "Abstraction Layer (C++ Interfaces)"
+        IH[IHardware Interface]
+        ITHS[ITempHumSensor Interface]
+    end
+
+    subgraph "Driver Layer (ESP-IDF Specific)"
+        EH[ESP32Hardware Implementation]
+        DHT20[DHT20 Driver]
+        DHT22[DHT22 Driver]
+        LS[led_strip Component]
+    end
+
+    subgraph "Physical Hardware"
+        ESP[ESP32-S3 SoC]
+        PIR[PIR Sensor / GPIO]
+        RGB[WS2812B RGB LED]
+        I2C[I2C Bus]
+    end
+
+    SLC --> IH
+    EH -- implements --> IH
+    EH --> ITHS
+    EH --> LS
+    DHT20 -- implements --> ITHS
+    DHT22 -- implements --> ITHS
+    
+    EH -.-> ESP
+    LS -.-> RGB
+    DHT20 -.-> I2C
+    PIR -.-> EH
+```
+
+### 2. Real-Time Task Orchestration (FreeRTOS)
+The system leverages **Hardware Interrupts (ISR)** and **Binary Semaphores** to ensure that critical events like intrusion detection are handled with the highest priority and sub-1ms latency.
+
+```mermaid
+sequenceDiagram
+    participant PIR as PIR Sensor (Hardware)
+    participant ISR as GPIO ISR (Low-level)
+    participant ET as Emergency Task (Prio 5)
+    participant SLC as SmartLabCore (Logic)
+    participant HAL as IHardware (HAL)
+
+    Note over PIR, HAL: Event-Driven Intrusion Detection (Sub-1ms)
+    PIR->>ISR: Motion Detected
+    ISR->>ET: xSemaphoreGiveFromISR()
+    activate ET
+    ET->>SLC: triggerEmergency()
+    SLC->>HAL: setLedMode(EMERGENCY)
+    SLC->>HAL: setAlarm(true)
+    deactivate ET
+    
+    Note over PIR, HAL: Periodic Sensing Task (Prio 2)
+    loop Every 2000ms
+        SLC->>HAL: getTemperature()
+        HAL-->>SLC: 28.5°C
+        SLC->>SLC: handleAutoLogic()
+    end
+```
+
+---
+
 ## 🚀 Key Features
 
 *   **Real-time Multitasking:** Leverages **FreeRTOS** for priority-based task scheduling (Emergency, Sensing, and System Management).
